@@ -10,29 +10,31 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <RelativeLayout
-        android:id="@+id/lightLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" >
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:text="@string/light_control_text"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical" />
 
-        <ToggleButton
-            android:id="@+id/lightButton"
+        <ImageButton
+            android:src="@drawable/light_off"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_toRightOf="@id/textView1"
+            android:id="@+id/lightButton"
             android:onClick="onLightStateChange"
-            android:textOff="@string/lights_off"
-            android:textOn="@string/lights_on" />
-    </RelativeLayout>
+            android:layout_alignParentRight="true"
+            android:background="@drawable/rounded_corner"
+            android:minWidth="100dp"
+            android:minHeight="60dp" />
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/optLayout"
@@ -66,29 +68,33 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/gateLayout"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp">
 
         <TextView
             android:id="@+id/textView2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical"
             android:text="@string/gate_opener_text"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_weight="1" />
 
-        <Button
-            android:id="@+id/gateButton"
-            style="?android:attr/buttonStyleSmall"
+        <ImageButton
+            android:src="@drawable/gate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_toRightOf="@id/textView2"
+            android:id="@+id/gateButton"
+            android:layout_weight="0"
             android:onClick="onGateButtonClick"
-            android:text="@string/gate_opener_button_text" />
-    </RelativeLayout>
+            android:layout_alignParentRight="true"
+            android:background="@drawable/rounded_corner"
+            android:minWidth="100dp"
+            android:minHeight="60dp" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/statusLayout"

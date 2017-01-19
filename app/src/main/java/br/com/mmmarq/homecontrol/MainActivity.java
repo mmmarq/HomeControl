@@ -11,7 +11,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 
 public class MainActivity extends Activity {
@@ -20,8 +20,8 @@ public class MainActivity extends Activity {
 	private static boolean AUTOMATIC = true;
 	private static boolean MANUAL = false;
 	
-	private ToggleButton s;
-	private Button b;
+	private ImageButton s;
+	private ImageButton b;
 	private TextView t;
 	private TextView h;
     private ImageView tempImage;
@@ -35,8 +35,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-   		s = (ToggleButton) findViewById(R.id.lightButton);
-   		b = (Button) findViewById(R.id.gateButton);
+   		s = (ImageButton) findViewById(R.id.lightButton);
+   		b = (ImageButton) findViewById(R.id.gateButton);
    		t = (TextView) findViewById(R.id.TemperatureTextView);
    		h = (TextView) findViewById(R.id.HumidityTextView);
    		r1 = (RadioButton) findViewById(R.id.automaticRadio);
@@ -65,17 +65,18 @@ public class MainActivity extends Activity {
     }
         
     public void onLightStateChange(View view){
-    	boolean on = ((ToggleButton) view).isChecked();
+        lightStatus = !lightStatus;
     	
    		if ( ServerCommands.checkConnectivity(getApplicationContext()) ){
    			AsyncUpdateStatus runner = new AsyncUpdateStatus();
-   			if (on){
+   			if (lightStatus){
    	   		    runner.execute("light.on");
-   			}else{
+                s.setImageResource(R.drawable.light_on);
+            }else{
    	   		    runner.execute("light.off");
-   			}
+                s.setImageResource(R.drawable.light_off);
+            }
    		}else{
-   			((ToggleButton) view).setChecked(!on);
    			Toast.makeText(getApplicationContext(), getString(R.string.connection_error), Toast.LENGTH_LONG).show();
    		}
  	}
@@ -164,8 +165,10 @@ public class MainActivity extends Activity {
     			setComponentStatus(true);
     			if ( commandResult.split(" ")[0].equals("on") ){
     				lightStatus = true;
+					s.setImageResource(R.drawable.light_on);
     			}else{
     				lightStatus = false;
+                    s.setImageResource(R.drawable.light_off);
     			}
     			if ( commandResult.split(" ")[1].equals("automatic") ){
     				r1.setChecked(true);
@@ -182,10 +185,14 @@ public class MainActivity extends Activity {
 				if ( f < 15){
 					tempImage.setImageResource(R.drawable.temp_low);
 				}else{
-					if (f < 30){
+					if (f < 26){
                         tempImage.setImageResource(R.drawable.temp_mid);
 					}else{
-                        tempImage.setImageResource(R.drawable.temp_high);
+                        if (f < 33) {
+                            tempImage.setImageResource(R.drawable.temp_mhigh);
+                        }else{
+                            tempImage.setImageResource(R.drawable.temp_high);
+                        }
 					}
 				}
     			h.setText( commandResult.split(" ")[3] + "%");
@@ -200,7 +207,6 @@ public class MainActivity extends Activity {
                     }
                 }
 
-    			s.setChecked(lightStatus);
     			Toast.makeText(getApplicationContext(), getString(R.string.update_completed), Toast.LENGTH_SHORT).show();
     		}else{
     			Toast.makeText(getApplicationContext(), getString(R.string.connection_error), Toast.LENGTH_SHORT).show();
