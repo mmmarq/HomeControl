@@ -33,7 +33,8 @@
             android:layout_alignParentRight="true"
             android:background="@drawable/rounded_corner"
             android:minWidth="100dp"
-            android:minHeight="60dp" />
+            android:minHeight="60dp"
+            android:rotation="180" />
     </LinearLayout>
 
     <RelativeLayout
