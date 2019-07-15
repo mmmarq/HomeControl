@@ -19,6 +19,8 @@ import org.keyczar.exceptions.KeyczarException;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
+import android.net.wifi.WifiInfo;
 import android.net.NetworkInfo;
 import android.os.Environment;
 
@@ -28,17 +30,17 @@ public class ServerCommands {
     private static String PVT_KEY_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"Keys"+File.separator+"private";
     private static String HST_SRV_PATH = Environment.getExternalStorageDirectory().getAbsolutePath()+File.separator+"Keys"+File.separator+"host";
     private static int MSGLEN = 178;
-    
+
    	public static String sendServerCommand(String command,Context context){
 		String LOCALNETWORK = "";
 		String LOCALIP = "";
 		String REMOTESERVER = "";
 		String SERVER = "";
 		String PORT = "0";
-		
+
 		String commandResult = new String();
 		char[] incoming = new char[MSGLEN];
-		
+
 		try{
    	   	 	Encrypter encrypter = new Encrypter(PUB_KEY_PATH);
    	   	 	Crypter crypter = new Crypter(PVT_KEY_PATH);
@@ -76,7 +78,7 @@ public class ServerCommands {
    		    }
    		   	//Create socket
 			Socket socket = new Socket(SERVER, Integer.parseInt(PORT));
-			
+
 		   	//Send command to server
 		   	PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);
 		   	out.println(cypheredCommand);
@@ -116,9 +118,9 @@ public class ServerCommands {
 		String REMOTESERVER = "";
 		String SERVER = "";
 		String PORT = "0";
-		
+
 		byte[] pic = new byte[0];
-		
+
 		try{
    	   	 	Encrypter encrypter = new Encrypter(PUB_KEY_PATH);
    	   	 	Crypter crypter = new Crypter(PVT_KEY_PATH);
@@ -148,7 +150,7 @@ public class ServerCommands {
    		    }
    		    br.close();
 
-   		    String networkName = ServerCommands.getNetowrkName(context).toLowerCase(); 
+   		    String networkName = ServerCommands.getNetowrkName(context).toLowerCase();
    		    if (networkName.contains(LOCALNETWORK.toLowerCase())){
    		    	SERVER = LOCALIP;
    		    }else{
@@ -156,7 +158,7 @@ public class ServerCommands {
    		    }
    		   	//Create socket
 			Socket socket = new Socket(SERVER, Integer.parseInt(PORT));
-						
+
 		   	//Send command to server
 		   	PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);
 		   	out.println(cypheredCommand);
@@ -171,7 +173,7 @@ public class ServerCommands {
 		   	int imageLen = input.readInt();
 		   	pic = new byte[imageLen];
             input.readFully(pic);
-		   	
+
             socket.close();
 		}catch (UnknownHostException e){
 			return pic;
@@ -182,7 +184,7 @@ public class ServerCommands {
 		}
 		return pic;
 	}
-    	
+
     public static boolean checkConnectivity(Context context){
     	/*Check network availability*/
    		ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -201,15 +203,24 @@ public class ServerCommands {
         	return false;
         }
     }
-    
+
     public static String getNetowrkName(Context context){
    		ConnectivityManager cm = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
    		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if ( activeNetwork != null ){
-           if (activeNetwork.getExtraInfo() == null){
-			   return activeNetwork.getTypeName();
+           String extraInfo = activeNetwork.getExtraInfo();
+           if (extraInfo == null){
+               String typeName = activeNetwork.getTypeName();
+               if (typeName.equalsIgnoreCase("WIFI")){
+				   WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+				   WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+				   String ssid = wifiInfo.getSSID();
+				   return ssid;
+			   }else {
+				   return typeName;
+			   }
 		   }else {
-               return activeNetwork.getExtraInfo();
+               return extraInfo;
            }
         }else{
         	return null;
